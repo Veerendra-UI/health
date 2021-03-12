@@ -1,0 +1,34 @@
+[
+    {
+    "dictationstatusid": "1",
+    "dictationstatus": "Not Applicable"
+    },
+    {
+    "dictationstatusid": "2",
+    "dictationstatus": "Pending"
+    },
+    {
+    "dictationstatusid": "3",
+    "dictationstatus": "In Progress"
+    },
+    {
+    "dictationstatusid": "4",
+    "dictationstatus": "Dictation Completed"
+    },
+    {
+    "dictationstatusid": "5",
+    "dictationstatus": "Externally Dictated"
+    },
+    {
+    "dictationstatusid": "6",
+    "dictationstatus": "Waiting for Report"
+    },
+    {
+    "dictationstatusid": "7",
+    "dictationstatus": "Report Available"
+    },
+    {
+    "dictationstatusid": "8",
+    "dictationstatus": "Pending Approval"
+    }
+    ]
