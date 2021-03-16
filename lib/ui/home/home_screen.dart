@@ -374,7 +374,10 @@ class _PatientAppointmentState extends State<PatientAppointment> {
                                                 fontSize: 16.0,
                                                 fontWeight: FontWeight.bold))
                                       ]),
-                                ])))
+                                ]
+                                )
+                            )
+                        )
                       ],
                     ),
                   ),
@@ -466,23 +469,32 @@ class _PatientAppointmentState extends State<PatientAppointment> {
                                                     child: GroupedListView<dynamic, String>(
 
                                                         elements: filteredPatients,
-
                                                         shrinkWrap: true,
-                                                        groupBy: (filteredPatients) {
+                                                        groupBy: (filteredPatients )
+                                                        // =>filteredPatients['group'],
+                                                        // groupComparator: (value1, value2) => value2.compareTo(value1),
+                                                        {
                                                           print('groupBy ${filteredPatients.practice}');
 
+                                                          // print("value is ");
+                                                          // print(filteredPatients);
                                                           return filteredPatients.practice;
-
                                                         },
 
-                                                        groupSeparatorBuilder: (String
-                                                                practice) =>
+
+                                              groupSeparatorBuilder: (String practice) =>
                                                             TransactionGroupSeparator(
                                                                 practice: practice,
-                                                                appointmentsCount: practice.length),
+                                                                // appointmentsCount: practice.length
+
+                                                              appointmentsCount: filteredPatients.length,
+
+                                                              // filteredPatients: filteredPatients.where((element) => element.practice).toList().length;
+
+                                                            ),
+
                                                         order: GroupedListOrder.ASC,
-                                                        itemBuilder:
-                                                            (context, element) =>
+                                                        itemBuilder: (context, element) =>
                                                                 Hero(
                                                                   tag: element,
                                                                   child:
@@ -520,9 +532,7 @@ class _PatientAppointmentState extends State<PatientAppointment> {
                                                                             ),
                                                                           );
                                                                         },
-                                                                        title: Text(element
-                                                                            .patient
-                                                                            .displayName),
+                                                                        title: Text(element.patient.displayName),
                                                                         subtitle:
                                                                             Column(
                                                                           children: [
@@ -576,8 +586,9 @@ class _PatientAppointmentState extends State<PatientAppointment> {
                                                                       ),
                                                                     ),
                                                                   ),
-                                                                )
+                                                                ),
                                                     ),
+
                                                   ),
                                                 )
                                               : Container(
@@ -912,8 +923,7 @@ class _PatientAppointmentState extends State<PatientAppointment> {
                                                   filteredPatients.isNotEmpty
                                               ? LazyLoadScrollView(
                                                   isLoading: isLoadingVertical,
-                                                  onEndOfPage: () =>
-                                                      _loadMoreVertical(),
+                                                  onEndOfPage: () => _loadMoreVertical(),
                                                   child: Card(
                                                     child: GroupedListView<
                                                             dynamic, String>(
@@ -925,27 +935,27 @@ class _PatientAppointmentState extends State<PatientAppointment> {
 
                                                           print('groupBy ${element.practice}');
 
-                                                          int count =0;
-                                                          for(int i=0;i< filteredPatients.length;i++)
-                                                            {
-                                                              if(filteredPatients[i] == element )
-                                                                count ++ ;
-                                                            }
-                                                          print('${count}');
+                                                          // int count =0;
+                                                          // for(int i=0;i< filteredPatients.length;i++)
+                                                          //   {
+                                                          //     if(filteredPatients[i] == element )
+                                                          //       count ++ ;
+                                                          //   }
+                                                          // print('${count}');
 
                                                           return element.practice;
                                                         },
                                                         groupSeparatorBuilder:
                                                             (String practice) =>
                                                                 TransactionGroupSeparator(
-                                                                  practice:
-                                                                      practice,
+                                                                  practice: practice,
+                                                                  appointmentsCount: filteredPatients.length,
+
                                                                 ),
                                                         order: GroupedListOrder
                                                             .ASC,
                                                         itemBuilder:
-                                                            (context,
-                                                                    element) =>
+                                                            (context, element) =>
                                                                 Hero(
                                                                   tag: element,
                                                                   child:
@@ -1154,13 +1164,8 @@ class _PatientAppointmentState extends State<PatientAppointment> {
                   Container(
                     width: 250,
                     child: LocationDropDown(onTapOfLocation: (newValue) {
-                      // setState(() {
-
                       _currentSelectedLocationId = newValue.locationId;
-
                       print(_currentSelectedLocationId);
-
-                      // });
                     }),
                   )
                 ],
@@ -1681,18 +1686,29 @@ class _PatientAppointmentState extends State<PatientAppointment> {
 
 class TransactionGroupSeparator extends StatelessWidget {
   final String practice;
-  final int appointmentsCount;
-  TransactionGroupSeparator({this.practice, this.appointmentsCount});
+  int appointmentsCount;
+  final int filteredPatients;
+  TransactionGroupSeparator({this.practice, this.appointmentsCount,this.filteredPatients});
 
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: Container(
-        child: Text(
-          "${this.practice} ${[this.appointmentsCount]}",
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-        ),
+      child: Column(
+        children: [
+          Text(
+            "${this.practice} ${[this.appointmentsCount ]}",
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
+          // for(int appointmentsCount=0;  appointmentsCount<=practice.length; appointmentsCount++)
+          //     Text(
+          //       // "${this.practice} "
+          //           "${[this.appointmentsCount]}",
+          //       style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          //     ),
+
+        ],
       ),
+
     );
   }
 }

@@ -55,7 +55,8 @@ class LoginState extends State<LoginScreen> {
             Text(AppStrings.wrong_password_email,
                 style: TextStyle(
                   fontSize: 15,
-                )),
+                ),
+            ),
           ],
         ),
       ),
@@ -333,5 +334,3 @@ class LoginState extends State<LoginScreen> {
   }
 }
 
-
-/// Abhihek designed this login screen
