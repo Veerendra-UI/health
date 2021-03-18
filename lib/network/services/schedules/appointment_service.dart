@@ -1,11 +1,8 @@
 import 'dart:convert';
 import 'package:YOURDRS_FlutterAPP/common/app_constants.dart';
 import 'package:YOURDRS_FlutterAPP/common/app_strings.dart';
-
-// import 'package:YOURDRS_FlutterAPP/network/models/schedule_list.dart';
 import 'package:YOURDRS_FlutterAPP/network/repo/local/preference/local_storage.dart';
 import 'package:http/http.dart' as http;
-import '../../models/home/appointment.dart';
 import '../../models/home/location.dart';
 import '../../models/home/provider.dart';
 import '../../models/home/schedule.dart';
@@ -33,7 +30,8 @@ class Services {
 //     return parsed.map<Patients>((json) => Patients.fromJson(json)).toList();
 //   }
 
-  static Future<List<ScheduleList>> getSchedule(
+  ///get schedule service method
+  static Future<List<ScheduleList>> getSchedulepost(
       String date,
       int providerId,
       int locationId,
@@ -74,7 +72,7 @@ class Services {
     }
   }
 
-  //getLocation service method//
+  ///getLocation service method
 
   Future<Locations> getLocation() async {
     var memberId =
@@ -106,7 +104,7 @@ class Services {
     return location;
   }
 
-//getProviders service
+///getProviders service
   Future<Providers> getProviders() async {
     var memberId =
         await MySharedPreferences.instance.getStringValue(Keys.memberId);

@@ -17,8 +17,7 @@ class LoginBloc extends Bloc<FormScreenEvent, FormScreenState> {
   ///Receiving service class instance from main.dart
   @override
   Stream<FormScreenState> mapEventToState(
-    FormScreenEvent event,
-  ) async* {
+    FormScreenEvent event,) async* {
     try {
       if (event is FormScreenEvent) {
         AuthenticateUser authenticateUser =

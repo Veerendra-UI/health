@@ -13,9 +13,7 @@ class PinScreenBloc extends Bloc<PinScreenEvent, PinScreenState> {
   PinScreenBloc(this.pinRepo) : super(PinScreenState(isTrue: true));
 
   @override
-  Stream<PinScreenState> mapEventToState(
-    PinScreenEvent event,
-  ) async* {
+  Stream<PinScreenState> mapEventToState(PinScreenEvent event,) async* {
     try {
       // TODO: implement mapEventToState
       if (event is PinScreenEvent) {

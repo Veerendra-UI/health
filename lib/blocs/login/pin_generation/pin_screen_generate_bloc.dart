@@ -22,8 +22,7 @@ class PinScreenGenerateBloc
     if (event is PinGenerateScreenEvent) {
       ///checking if event is present in Event class
       print(event.memberId);
-      PinGenerateModel pinGenerateModel =
-          await pinGenerateResponse.postApiMethod(event.memberId, event.pin);
+      PinGenerateModel pinGenerateModel = await pinGenerateResponse.postApiMethod(event.memberId, event.pin);
 
       ///storing api response in model class
       print(pinGenerateModel);

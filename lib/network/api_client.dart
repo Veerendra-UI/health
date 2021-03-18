@@ -106,11 +106,11 @@ class ApiClient with AppLogHelper {
   Options getDioOptions(String method, {bool auth = true}) {
     Options options = Options();
     options.method = method;
-//    if (auth) {
-//      options.headers = {
-//        "Authorization": AppConstants.auth,
-//      };
-//    }
+   // if (auth) {
+   //   options.headers = {
+   //     "Authorization": AppConstants.auth,
+   //   };
+   // }
     return options;
   }
 }

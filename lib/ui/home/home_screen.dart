@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'dart:collection';
+import 'dart:convert';
 import 'package:YOURDRS_FlutterAPP/network/models/home/dictation.dart';
 import 'package:YOURDRS_FlutterAPP/network/models/home/provider.dart';
 import 'package:YOURDRS_FlutterAPP/network/models/home/schedule.dart';
@@ -29,7 +31,7 @@ class PatientAppointment extends StatefulWidget {
   _PatientAppointmentState createState() => _PatientAppointmentState();
 }
 
-//Time delay related code
+///Time delay related code
 class Debouncer {
   final int milliseconds;
   VoidCallback action;
@@ -46,6 +48,7 @@ class Debouncer {
 }
 
 class _PatientAppointmentState extends State<PatientAppointment> {
+
   var displayName = "";
   var profilePic = "";
 
@@ -53,32 +56,40 @@ class _PatientAppointmentState extends State<PatientAppointment> {
   final _debouncer = Debouncer(milliseconds: 500);
 
   Map<String, dynamic> appointment;
-  //var for selected Provider Id ,Dictation Id,Location Id
+
+  ///var for selected Provider Id ,Dictation Id,Location Id
   var _currentSelectedProviderId;
   var _currentSelectedLocationId;
   var _currentSelectedDictationId;
-// list of Patients
+
+  ///list of Patients
   List<ScheduleList> patients = List();
   List<ScheduleList> filteredPatients = List();
 
-// Declared Variables for start Date and end Date
+  /// Declared Variables for start Date and end Date
   String startDate;
   String endDate;
-  //booean property for visibility for search and clear filter
+
+  ///booean property for visibility for search and clear filter
   bool visibleSearchFilter = false;
   bool visibleClearFilter = true;
-  //booean property for visibility for Date Picker
+
+  ///booean property for visibility for Date Picker
   bool datePicker = true;
   bool dateRange = false;
   String codeDialog;
   String valueText;
 
-//Lazyloading related variables
+  ///Lazyloading related variables
   List<int> verticalData = [];
   final int increment = 10;
 
   bool isLoadingVertical = false;
   TextEditingController _textFieldController = TextEditingController();
+
+  /// counting for each practice location using hashmap
+  HashMap<String , int> practiceCountMap = HashMap();
+
   @override
   void initState() {
     super.initState();
@@ -93,18 +104,19 @@ class _PatientAppointmentState extends State<PatientAppointment> {
     _loadData();
   }
 
-//poping (Destroy)of dialog box after orientation change
-  NavigatorState _navigatorState;
+// poping (Destroy)of dialog box after orientation change
+//   NavigatorState _navigatorState;
 
   bool init = false;
   bool _isOpen = false;
+
   @override
   void didChangeDependencies() {
     if (!init) {
       final navigator = Navigator.of(context);
-      setState(() {
-        _navigatorState = navigator;
-      });
+      // setState(() {
+      //   // _navigatorState = navigator;
+      // });
       init = true;
     }
     super.didChangeDependencies();
@@ -113,9 +125,9 @@ class _PatientAppointmentState extends State<PatientAppointment> {
   @override
   void dispose() {
     print("dispose dialog" '$_isOpen');
-    if (_isOpen) {
-      _navigatorState.pop();
-    }
+    // if (_isOpen) {
+    //   // _navigatorState.pop();
+    // }
     super.dispose();
   }
 
@@ -138,7 +150,6 @@ class _PatientAppointmentState extends State<PatientAppointment> {
 
     // Add in an artificial delay
     await new Future.delayed(const Duration(seconds: 2));
-
     verticalData.addAll(
         List.generate(increment, (index) => verticalData.length + index));
 
@@ -178,17 +189,17 @@ class _PatientAppointmentState extends State<PatientAppointment> {
                 child: ClipOval(
                   child: profilePic == ""
                       ? Image.asset(
-                          AppImages.defaultImg,
-                          width: 50,
-                          height: 50,
-                          fit: BoxFit.cover,
-                        )
+                    AppImages.defaultImg,
+                    width: 50,
+                    height: 50,
+                    fit: BoxFit.cover,
+                  )
                       : Image.network(
-                          profilePic,
-                          width: 50,
-                          height: 50,
-                          fit: BoxFit.cover,
-                        ),
+                    profilePic,
+                    width: 50,
+                    height: 50,
+                    fit: BoxFit.cover,
+                  ),
                 ),
               ),
               title: Row(
@@ -337,44 +348,44 @@ class _PatientAppointmentState extends State<PatientAppointment> {
                                 child: Column(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
-                                  Text("Selected date range is",
-                                      style: TextStyle(
-                                          color:
+                                      Text("Selected date range is",
+                                          style: TextStyle(
+                                              color:
                                               CustomizedColors.buttonTitleColor,
-                                          fontSize: 16.0,
-                                          fontWeight: FontWeight.bold)),
-                                  Row(
-                                      mainAxisAlignment:
+                                              fontSize: 16.0,
+                                              fontWeight: FontWeight.bold)),
+                                      Row(
+                                          mainAxisAlignment:
                                           MainAxisAlignment.center,
-                                      children: [
-                                        Padding(
-                                            padding: EdgeInsets.fromLTRB(
-                                                5, 0, 0, 0)),
-                                        Text(
-                                          '${AppConstants.parseDatePattern(startDate, AppConstants.MMMddyyyy)}',
-                                          style: TextStyle(
-                                              color: CustomizedColors
-                                                  .buttonTitleColor,
-                                              fontSize: 16.0,
-                                              fontWeight: FontWeight.bold),
-                                        ),
-                                        Text(
-                                          '-',
-                                          style: TextStyle(
-                                              color: CustomizedColors
-                                                  .buttonTitleColor,
-                                              fontSize: 16.0,
-                                              fontWeight: FontWeight.bold),
-                                        ),
-                                        Text(
-                                            '${AppConstants.parseDatePattern(endDate, AppConstants.MMMddyyyy)}',
-                                            style: TextStyle(
-                                                color: CustomizedColors
-                                                    .buttonTitleColor,
-                                                fontSize: 16.0,
-                                                fontWeight: FontWeight.bold))
-                                      ]),
-                                ]
+                                          children: [
+                                            Padding(
+                                                padding: EdgeInsets.fromLTRB(
+                                                    5, 0, 0, 0)),
+                                            Text(
+                                              '${AppConstants.parseDatePattern(startDate, AppConstants.MMMddyyyy)}',
+                                              style: TextStyle(
+                                                  color: CustomizedColors
+                                                      .buttonTitleColor,
+                                                  fontSize: 16.0,
+                                                  fontWeight: FontWeight.bold),
+                                            ),
+                                            Text(
+                                              '-',
+                                              style: TextStyle(
+                                                  color: CustomizedColors
+                                                      .buttonTitleColor,
+                                                  fontSize: 16.0,
+                                                  fontWeight: FontWeight.bold),
+                                            ),
+                                            Text(
+                                                '${AppConstants.parseDatePattern(endDate, AppConstants.MMMddyyyy)}',
+                                                style: TextStyle(
+                                                    color: CustomizedColors
+                                                        .buttonTitleColor,
+                                                    fontSize: 16.0,
+                                                    fontWeight: FontWeight.bold))
+                                          ]),
+                                    ]
                                 )
                             )
                         )
@@ -400,7 +411,7 @@ class _PatientAppointmentState extends State<PatientAppointment> {
                                       left: 19,
                                       right: 19,
                                       top:
-                                          16), //symmetric(horizontal: 19, vertical: 16),
+                                      16), //symmetric(horizontal: 19, vertical: 16),
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.only(
                                         topLeft: Radius.circular(30),
@@ -412,209 +423,236 @@ class _PatientAppointmentState extends State<PatientAppointment> {
                                     controller: scrollController,
                                     child: Column(
                                       crossAxisAlignment:
-                                          CrossAxisAlignment.start,
+                                      CrossAxisAlignment.start,
                                       mainAxisSize: MainAxisSize.min,
                                       children: <Widget>[
                                         BlocBuilder<PatientBloc, PatientAppointmentBlocState>(
                                             builder: (context, state) {
-                                          print('BlocBuilder state $state');
-                                          if (state.isLoading) {
-                                            return Center(child: CircularProgressIndicator());
-                                          }
+                                              print('BlocBuilder state $state');
+                                              if (state.isLoading) {
+                                                return Center(child: CircularProgressIndicator());
+                                              }
 
-                                          if (state.errorMsg != null &&
-                                              state.errorMsg.isNotEmpty) {
-                                            return Text(state.errorMsg);
-                                          }
+                                              if (state.errorMsg != null &&
+                                                  state.errorMsg.isNotEmpty) {
+                                                return Text(state.errorMsg);
+                                              }
 
-                                          if (state.patients == null ||
-                                              state.patients.isEmpty) {
-                                            return Text(
-                                              "No patients found",
-                                              style: TextStyle(
-                                                  fontSize: 18.0,
-                                                  fontWeight: FontWeight.bold,
-                                                  color: CustomizedColors
-                                                      .noAppointment),
-                                            );
-                                          }
+                                              if (state.patients == null ||
+                                                  state.patients.isEmpty) {
+                                                return Text(
+                                                  "No patients found",
+                                                  style: TextStyle(
+                                                      fontSize: 18.0,
+                                                      fontWeight: FontWeight.bold,
+                                                      color: CustomizedColors
+                                                          .noAppointment),
+                                                );
+                                              }
 
-                                          // if (!isSearching) {
-                                          patients = state.patients;
-                                          // }
+                                              // if (!isSearching) {
+                                              patients = state.patients;
+                                              // }
+                                              try {
+                                                if (state.keyword != null &&
+                                                    state.keyword.isNotEmpty) {
+                                                  print(
+                                                      'patients ${patients?.length} filtered ${filteredPatients?.length}');
+                                                  filteredPatients = patients
+                                                      .where((u) => (u
+                                                      .patient.displayName
+                                                      .toLowerCase()
+                                                      .contains(state.keyword
+                                                      .toLowerCase())))
+                                                      .toList();
+                                                } else {
+                                                  filteredPatients = patients;
+                                                }
+                                              } catch (e) {
+                                                print(e);
+                                              }
 
-                                          if (state.keyword != null &&
-                                              state.keyword.isNotEmpty) {
-                                            print(
-                                                'patients ${patients?.length} filtered ${filteredPatients?.length}');
-                                            filteredPatients = patients
-                                                .where((u) => (u
-                                                    .patient.displayName
-                                                    .toLowerCase()
-                                                    .contains(state.keyword
-                                                        .toLowerCase())))
-                                                .toList();
-                                          } else {
-                                            filteredPatients = patients;
-                                          }
-                                          print(filteredPatients?.length);
-                                          return filteredPatients != null &&
+                                              /// display count of practice for loop
+                                              print(filteredPatients ?.length);
+                                              practiceCountMap.clear();
+
+                                              filteredPatients.forEach((element) {
+
+                                                int practiceCount = practiceCountMap[element.practice];
+                                                if(practiceCount == null)
+                                                  {
+                                                    practiceCount = 0;
+                                                  }
+                                                practiceCountMap[element.practice] = practiceCount +1;
+                                              });
+                                              print('practicecount $practiceCountMap');
+
+
+                                              return filteredPatients != null &&
                                                   filteredPatients.isNotEmpty
-                                              ? LazyLoadScrollView(
-                                                  isLoading: isLoadingVertical,
-                                                  onEndOfPage: () =>
-                                                      _loadMoreVertical(),
-                                                  child: Card(
+                                                  ? LazyLoadScrollView(
+                                                isLoading: isLoadingVertical,
+                                                onEndOfPage: () =>
+                                                    _loadMoreVertical(),
+                                                child: Card(
 
-                                                    child: GroupedListView<dynamic, String>(
+                                                  child: GroupedListView<dynamic, String>(
 
-                                                        elements: filteredPatients,
-                                                        shrinkWrap: true,
-                                                        groupBy: (filteredPatients )
-                                                        // =>filteredPatients['group'],
-                                                        // groupComparator: (value1, value2) => value2.compareTo(value1),
-                                                        {
-                                                          print('groupBy ${filteredPatients.practice}');
+                                                    elements: filteredPatients,
+                                                    shrinkWrap: true,
+                                                    useStickyGroupSeparators: true,
 
-                                                          // print("value is ");
-                                                          // print(filteredPatients);
-                                                          return filteredPatients.practice;
-                                                        },
+                                                    groupBy: (filteredPatients)
+
+                                                    {
+
+                                                      print('groupBy ${filteredPatients.practice}');
+
+                                                      return '${filteredPatients.practice}';
+                                                    },
 
 
-                                              groupSeparatorBuilder: (String practice) =>
-                                                            TransactionGroupSeparator(
-                                                                practice: practice,
-                                                                // appointmentsCount: practice.length
 
-                                                              appointmentsCount: filteredPatients.length,
 
-                                                              // filteredPatients: filteredPatients.where((element) => element.practice).toList().length;
+                                                    groupSeparatorBuilder: (String practice) =>
+                                                        TransactionGroupSeparator(
 
-                                                            ),
 
-                                                        order: GroupedListOrder.ASC,
-                                                        itemBuilder: (context, element) =>
-                                                                Hero(
-                                                                  tag: element,
-                                                                  child:
-                                                                      Material(
-                                                                    child:
-                                                                        Container(
-                                                                      decoration:
-                                                                          new BoxDecoration(
-                                                                              border: new Border(bottom: new BorderSide(color: CustomizedColors.homeSubtitleColor))),
-                                                                      child:
-                                                                          ListTile(
-                                                                        tileColor:
-                                                                            CustomizedColors.iconColor,
-                                                                        contentPadding:
-                                                                            EdgeInsets.all(0),
-                                                                        leading:
-                                                                            Icon(
-                                                                          Icons
-                                                                              .bookmark,
-                                                                          color:
-                                                                              Colors.green,
-                                                                        ),
-                                                                        onTap:
-                                                                            () {
-                                                                          Navigator
-                                                                              .push(
-                                                                            context,
-                                                                            MaterialPageRoute(
-                                                                              builder: (context) => PatientDetail(),
-                                                                              // Pass the arguments as part of the RouteSettings. The
-                                                                              // DetailScreen reads the arguments from these settings.
-                                                                              settings: RouteSettings(
-                                                                                arguments: element,
-                                                                              ),
-                                                                            ),
-                                                                          );
-                                                                        },
-                                                                        title: Text(element.patient.displayName),
-                                                                        subtitle:
-                                                                            Column(
-                                                                          children: [
-                                                                            Row(
-                                                                              children: [
-                                                                                Expanded(
-                                                                                  child: Text(
-                                                                                    "Dr." + "" + element.providerName ?? "",
-                                                                                    overflow: TextOverflow.ellipsis,
-                                                                                  ),
-                                                                                ),
-                                                                              ],
-                                                                            ),
-                                                                            Row(
-                                                                              children: [
-                                                                                Expanded(
-                                                                                  child: Text(element.scheduleName ?? "", style: TextStyle(fontSize: 12.0)),
-                                                                                ),
-                                                                              ],
-                                                                            ),
-                                                                            Row(
-                                                                              children: [
-                                                                                Text(
-                                                                                  element.appointmentStatus ?? "",
-                                                                                  overflow: TextOverflow.ellipsis,
-                                                                                  style: TextStyle(fontSize: 12.0),
-                                                                                ),
-                                                                              ],
-                                                                            ),
-                                                                          ],
-                                                                        ),
-                                                                        trailing: element.dictationStatus ==
-                                                                                "Pending"
-                                                                            ? Column(
-                                                                                mainAxisAlignment: MainAxisAlignment.end,
-                                                                                children: [
-                                                                                  RichText(
-                                                                                    text: TextSpan(
-                                                                                      text: '• ',
-                                                                                      style: TextStyle(color: CustomizedColors.dotColor, fontSize: 16),
-                                                                                      children: <TextSpan>[
-                                                                                        TextSpan(text: 'Dictation' + " " + element.dictationStatus ?? "", style: TextStyle(color: CustomizedColors.dictationStatusColor, fontSize: 14)),
-                                                                                      ],
-                                                                                    ),
-                                                                                  )
-                                                                                ],
-                                                                              )
-                                                                            : Container(
-                                                                                width: 5,
-                                                                              ),
+                                                          practice: practice,
+
+                                                          appointmentsCount: practiceCountMap[practice],
+
+                                                          // appointmentsCount: filteredPatients.length,
+
+
+                                                        ),
+
+                                                    order: GroupedListOrder.ASC,
+
+
+                                                    itemBuilder: (context, element) =>
+                                                        Hero(
+                                                          tag: element,
+                                                          child:
+                                                          Material(
+                                                            child:
+                                                            Container(
+                                                              decoration:
+                                                              new BoxDecoration(
+                                                                  border: new Border(bottom: new BorderSide(color: CustomizedColors.homeSubtitleColor))),
+                                                              child:
+                                                              ListTile(
+                                                                tileColor:
+                                                                CustomizedColors.iconColor,
+                                                                contentPadding:
+                                                                EdgeInsets.all(0),
+                                                                leading:
+                                                                Icon(
+                                                                  Icons
+                                                                      .bookmark,
+                                                                  color:
+                                                                  Colors.green,
+                                                                ),
+                                                                onTap:
+                                                                    () {
+                                                                  Navigator
+                                                                      .push(
+                                                                    context,
+                                                                    MaterialPageRoute(
+                                                                      builder: (context) => PatientDetail(),
+                                                                      // Pass the arguments as part of the RouteSettings. The
+                                                                      // DetailScreen reads the arguments from these settings.
+                                                                      settings: RouteSettings(
+                                                                        arguments: element,
                                                                       ),
                                                                     ),
-                                                                  ),
+                                                                  );
+                                                                },
+                                                                title: Text(element.patient.displayName),
+                                                                subtitle:
+                                                                Column(
+                                                                  children: [
+                                                                    Row(
+                                                                      children: [
+                                                                        Expanded(
+                                                                          child: Text(
+                                                                            "Dr." + "" + element.providerName ?? "",
+                                                                            overflow: TextOverflow.ellipsis,
+                                                                          ),
+                                                                        ),
+                                                                      ],
+                                                                    ),
+                                                                    Row(
+                                                                      children: [
+                                                                        Expanded(
+                                                                          child: Text(element.scheduleName ?? "", style: TextStyle(fontSize: 12.0)),
+                                                                        ),
+                                                                      ],
+                                                                    ),
+                                                                    Row(
+                                                                      children: [
+                                                                        Expanded(
+                                                                          child: Text(
+                                                                            element.appointmentStatus ?? "",
+                                                                            overflow: TextOverflow.ellipsis,
+                                                                            style: TextStyle(fontSize: 12.0),
+                                                                          ),
+                                                                        ),
+                                                                      ],
+                                                                    ),
+                                                                  ],
                                                                 ),
-                                                    ),
-
+                                                                trailing: element.dictationStatus ==
+                                                                    "Pending"
+                                                                    ? Column(
+                                                                  mainAxisAlignment: MainAxisAlignment.end,
+                                                                  children: [
+                                                                    RichText(
+                                                                      text: TextSpan(
+                                                                        text: '• ',
+                                                                        style: TextStyle(color: CustomizedColors.dotColor, fontSize: 16),
+                                                                        children: <TextSpan>[
+                                                                          TextSpan(text: 'Dictation' + " " + element.dictationStatus ?? "", style: TextStyle(color: CustomizedColors.dictationStatusColor, fontSize: 14)),
+                                                                        ],
+                                                                      ),
+                                                                    )
+                                                                  ],
+                                                                )
+                                                                    : Container(
+                                                                  width: 5,
+                                                                ),
+                                                              ),
+                                                            ),
+                                                          ),
+                                                        ),
                                                   ),
-                                                )
-                                              : Container(
 
-                                                  child: Column(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment
-                                                            .center,
-                                                    children: [
-                                                      Padding(
-                                                          padding: EdgeInsets
-                                                              .fromLTRB(50, 25,
-                                                                  50, 45)),
-                                                      Text(
-                                                        "No results found for related search",
-                                                        style: TextStyle(
-                                                            fontSize: 18.0,
-                                                            fontWeight:
-                                                                FontWeight.bold,
-                                                            color: CustomizedColors
-                                                                .noAppointment),
-                                                      )
-                                                    ],
-                                                  ),
-                                                );
-                                        }),
+                                                ),
+                                              )
+                                                  : Container(
+
+                                                child: Column(
+                                                  mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .center,
+                                                  children: [
+                                                    Padding(
+                                                        padding: EdgeInsets
+                                                            .fromLTRB(50, 25,
+                                                            50, 45)),
+                                                    Text(
+                                                      "No results found for related search",
+                                                      style: TextStyle(
+                                                          fontSize: 18.0,
+                                                          fontWeight:
+                                                          FontWeight.bold,
+                                                          color: CustomizedColors
+                                                              .noAppointment),
+                                                    )
+                                                  ],
+                                                ),
+                                              );
+                                            }),
                                       ],
                                     ),
                                   ),
@@ -634,7 +672,7 @@ class _PatientAppointmentState extends State<PatientAppointment> {
                     child: FloatingActionButton(
                         backgroundColor: CustomizedColors.primaryColor,
                         onPressed: () {},
-                        tooltip: 'Increment',
+                        tooltip: '',
                         child: Pop(
                           initialValue: 1,
                         )),
@@ -656,17 +694,17 @@ class _PatientAppointmentState extends State<PatientAppointment> {
                 child: ClipOval(
                   child: profilePic == ""
                       ? Image.asset(
-                          AppImages.defaultImg,
-                          width: 50,
-                          height: 50,
-                          fit: BoxFit.cover,
-                        )
+                    AppImages.defaultImg,
+                    width: 50,
+                    height: 50,
+                    fit: BoxFit.cover,
+                  )
                       : Image.network(
-                          profilePic,
-                          width: 50,
-                          height: 50,
-                          fit: BoxFit.cover,
-                        ),
+                    profilePic,
+                    width: 50,
+                    height: 50,
+                    fit: BoxFit.cover,
+                  ),
                 ),
               ),
               title: Row(
@@ -707,7 +745,6 @@ class _PatientAppointmentState extends State<PatientAppointment> {
                         _currentSelectedDictationId = null;
                         _currentSelectedLocationId = null;
                         _filterDialogLandScape(context);
-
                         _isOpen = true;
 //
                       },
@@ -804,41 +841,41 @@ class _PatientAppointmentState extends State<PatientAppointment> {
                                 child: Column(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
-                                  Text("Selected date range is",
-                                      style: TextStyle(
-                                          color:
+                                      Text("Selected date range is",
+                                          style: TextStyle(
+                                              color:
                                               CustomizedColors.buttonTitleColor,
-                                          fontSize: 16.0,
-                                          fontWeight: FontWeight.bold)),
-                                  Row(
-                                      mainAxisAlignment:
+                                              fontSize: 16.0,
+                                              fontWeight: FontWeight.bold)),
+                                      Row(
+                                          mainAxisAlignment:
                                           MainAxisAlignment.center,
-                                      children: [
-                                        Text(
-                                          '${AppConstants.parseDatePattern(startDate, AppConstants.MMMddyyyy)}',
-                                          style: TextStyle(
-                                              color: CustomizedColors
-                                                  .buttonTitleColor,
-                                              fontSize: 16.0,
-                                              fontWeight: FontWeight.bold),
-                                        ),
-                                        Text(
-                                          '-',
-                                          style: TextStyle(
-                                              color: CustomizedColors
-                                                  .buttonTitleColor,
-                                              fontSize: 16.0,
-                                              fontWeight: FontWeight.bold),
-                                        ),
-                                        Text(
-                                            '${AppConstants.parseDatePattern(endDate, AppConstants.MMMddyyyy)}',
-                                            style: TextStyle(
-                                                color: CustomizedColors
-                                                    .buttonTitleColor,
-                                                fontSize: 16.0,
-                                                fontWeight: FontWeight.bold))
-                                      ]),
-                                ])))
+                                          children: [
+                                            Text(
+                                              '${AppConstants.parseDatePattern(startDate, AppConstants.MMMddyyyy)}',
+                                              style: TextStyle(
+                                                  color: CustomizedColors
+                                                      .buttonTitleColor,
+                                                  fontSize: 16.0,
+                                                  fontWeight: FontWeight.bold),
+                                            ),
+                                            Text(
+                                              '-',
+                                              style: TextStyle(
+                                                  color: CustomizedColors
+                                                      .buttonTitleColor,
+                                                  fontSize: 16.0,
+                                                  fontWeight: FontWeight.bold),
+                                            ),
+                                            Text(
+                                                '${AppConstants.parseDatePattern(endDate, AppConstants.MMMddyyyy)}',
+                                                style: TextStyle(
+                                                    color: CustomizedColors
+                                                        .buttonTitleColor,
+                                                    fontSize: 16.0,
+                                                    fontWeight: FontWeight.bold))
+                                          ]),
+                                    ])))
                       ],
                     ),
                   ),
@@ -861,7 +898,7 @@ class _PatientAppointmentState extends State<PatientAppointment> {
                                       left: 19,
                                       right: 19,
                                       top:
-                                          16), //symmetric(horizontal: 19, vertical: 16),
+                                      16), //symmetric(horizontal: 19, vertical: 16),
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.only(
                                         topLeft: Radius.circular(30),
@@ -873,208 +910,202 @@ class _PatientAppointmentState extends State<PatientAppointment> {
                                     controller: scrollController,
                                     child: Column(
                                       crossAxisAlignment:
-                                          CrossAxisAlignment.start,
+                                      CrossAxisAlignment.start,
                                       children: <Widget>[
                                         BlocBuilder<PatientBloc,
-                                                PatientAppointmentBlocState>(
+                                            PatientAppointmentBlocState>(
                                             builder: (context, state) {
-                                          print('BlocBuilder state $state');
-                                          if (state.isLoading) {
-                                            return CircularProgressIndicator();
-                                          }
+                                              print('BlocBuilder state $state');
+                                              if (state.isLoading) {
+                                                return CircularProgressIndicator();
+                                              }
 
-                                          if (state.errorMsg != null &&
-                                              state.errorMsg.isNotEmpty) {
-                                            return Text(state.errorMsg);
-                                          }
+                                              if (state.errorMsg != null &&
+                                                  state.errorMsg.isNotEmpty) {
+                                                return Text(state.errorMsg);
+                                              }
 
-                                          if (state.patients == null ||
-                                              state.patients.isEmpty) {
-                                            return Text(
-                                              "No patients found",
-                                              style: TextStyle(
-                                                  fontSize: 18.0,
-                                                  fontWeight: FontWeight.bold,
-                                                  color: CustomizedColors
-                                                      .noAppointment),
-                                            );
-                                          }
+                                              if (state.patients == null ||
+                                                  state.patients.isEmpty) {
+                                                return Text(
+                                                  "No patients found",
+                                                  style: TextStyle(
+                                                      fontSize: 18.0,
+                                                      fontWeight: FontWeight.bold,
+                                                      color: CustomizedColors
+                                                          .noAppointment),
+                                                );
+                                              }
 
-                                          // if (!isSearching) {
-                                          patients = state.patients;
-                                          // }
+                                              // if (!isSearching) {
+                                              patients = state.patients;
+                                              // }
 
-                                          if (state.keyword != null &&
-                                              state.keyword.isNotEmpty) {
-                                            print(
-                                                'patients ${patients?.length} filtered ${filteredPatients?.length}');
-                                            filteredPatients = patients
-                                                .where((u) => (u
+                                              if (state.keyword != null &&
+                                                  state.keyword.isNotEmpty) {
+                                                print(
+                                                    'patients ${patients?.length} filtered ${filteredPatients?.length}');
+                                                filteredPatients = patients
+                                                    .where((u) => (u
                                                     .patient.displayName
                                                     .toLowerCase()
                                                     .contains(state.keyword
-                                                        .toLowerCase())))
-                                                .toList();
-                                          } else {
-                                            filteredPatients = patients;
-                                          }
+                                                    .toLowerCase())))
+                                                    .toList();
+                                              } else {
+                                                filteredPatients = patients;
+                                              }
 
-                                          return filteredPatients != null &&
+                                              return filteredPatients != null &&
                                                   filteredPatients.isNotEmpty
-                                              ? LazyLoadScrollView(
-                                                  isLoading: isLoadingVertical,
-                                                  onEndOfPage: () => _loadMoreVertical(),
-                                                  child: Card(
-                                                    child: GroupedListView<
-                                                            dynamic, String>(
-                                                        elements: filteredPatients,
-                                                        shrinkWrap: true,
-                                                        groupBy: (element,)
+                                                  ? LazyLoadScrollView(
+                                                isLoading: isLoadingVertical,
+                                                onEndOfPage: () => _loadMoreVertical(),
+                                                child: Card(
+                                                  child: GroupedListView<
+                                                      dynamic, String>(
+                                                      elements: filteredPatients,
+                                                      shrinkWrap: true,
+                                                      groupBy: (element,)
 
-                                                        {
+                                                      {
 
-                                                          print('groupBy ${element.practice}');
+                                                        print('groupBy ${element.practice}');
 
-                                                          // int count =0;
-                                                          // for(int i=0;i< filteredPatients.length;i++)
-                                                          //   {
-                                                          //     if(filteredPatients[i] == element )
-                                                          //       count ++ ;
-                                                          //   }
-                                                          // print('${count}');
 
-                                                          return element.practice;
-                                                        },
-                                                        groupSeparatorBuilder:
-                                                            (String practice) =>
-                                                                TransactionGroupSeparator(
-                                                                  practice: practice,
-                                                                  appointmentsCount: filteredPatients.length,
+                                                        return element.practice;
+                                                      },
+                                                      groupSeparatorBuilder:
+                                                          (String practice) =>
+                                                          TransactionGroupSeparator(
+                                                            practice: practice,
+                                                            // appointmentsCount: providerCountMap[practice],
+                                                            appointmentsCount: filteredPatients.length,
 
-                                                                ),
-                                                        order: GroupedListOrder
-                                                            .ASC,
-                                                        itemBuilder:
-                                                            (context, element) =>
-                                                                Hero(
-                                                                  tag: element,
-                                                                  child:
-                                                                      Material(
-                                                                    child:
-                                                                        Container(
-                                                                      decoration:
-                                                                          new BoxDecoration(
-                                                                              border: new Border(bottom: new BorderSide(color: CustomizedColors.homeSubtitleColor))),
-                                                                      child:
-                                                                          ListTile(
-                                                                        tileColor:
-                                                                            CustomizedColors.iconColor,
-                                                                        contentPadding:
-                                                                            EdgeInsets.all(0),
-                                                                        leading:
-                                                                            Icon(
-                                                                          Icons
-                                                                              .bookmark,
-                                                                          color:
-                                                                              Colors.green,
+                                                          ),
+                                                      order: GroupedListOrder
+                                                          .ASC,
+                                                      itemBuilder:
+                                                          (context, element) =>
+                                                          Hero(
+                                                            tag: element,
+                                                            child:
+                                                            Material(
+                                                              child:
+                                                              Container(
+                                                                decoration:
+                                                                new BoxDecoration(
+                                                                    border: new Border(bottom: new BorderSide(color: CustomizedColors.homeSubtitleColor))),
+                                                                child:
+                                                                ListTile(
+                                                                  tileColor:
+                                                                  CustomizedColors.iconColor,
+                                                                  contentPadding:
+                                                                  EdgeInsets.all(0),
+                                                                  leading:
+                                                                  Icon(
+                                                                    Icons
+                                                                        .bookmark,
+                                                                    color:
+                                                                    Colors.green,
+                                                                  ),
+                                                                  onTap:
+                                                                      () {
+                                                                    Navigator
+                                                                        .push(
+                                                                      context,
+                                                                      MaterialPageRoute(
+                                                                        builder: (context) => PatientDetail(),
+                                                                        // Pass the arguments as part of the RouteSettings. The
+                                                                        // DetailScreen reads the arguments from these settings.
+                                                                        settings: RouteSettings(
+                                                                          arguments: element,
                                                                         ),
-                                                                        onTap:
-                                                                            () {
-                                                                          Navigator
-                                                                              .push(
-                                                                            context,
-                                                                            MaterialPageRoute(
-                                                                              builder: (context) => PatientDetail(),
-                                                                              // Pass the arguments as part of the RouteSettings. The
-                                                                              // DetailScreen reads the arguments from these settings.
-                                                                              settings: RouteSettings(
-                                                                                arguments: element,
-                                                                              ),
+                                                                      ),
+                                                                    );
+                                                                  },
+                                                                  title: Text(element
+                                                                      .patient
+                                                                      .displayName),
+                                                                  subtitle:
+                                                                  Column(
+                                                                    children: [
+                                                                      Row(
+                                                                        children: [
+                                                                          Expanded(
+                                                                            child: Text(
+                                                                              "Dr." + "" + element.providerName ?? "",
+                                                                              overflow: TextOverflow.ellipsis,
                                                                             ),
-                                                                          );
-                                                                        },
-                                                                        title: Text(element
-                                                                            .patient
-                                                                            .displayName),
-                                                                        subtitle:
-                                                                            Column(
-                                                                          children: [
-                                                                            Row(
-                                                                              children: [
-                                                                                Expanded(
-                                                                                  child: Text(
-                                                                                    "Dr." + "" + element.providerName ?? "",
-                                                                                    overflow: TextOverflow.ellipsis,
-                                                                                  ),
-                                                                                ),
-                                                                              ],
-                                                                            ),
-                                                                            Row(
-                                                                              children: [
-                                                                                Expanded(
-                                                                                  child: Text(element.scheduleName ?? "", style: TextStyle(fontSize: 12.0)),
-                                                                                ),
-                                                                              ],
-                                                                            ),
-                                                                            Row(
-                                                                              children: [
-                                                                                Text(
-                                                                                  element.appointmentStatus ?? "",
-                                                                                  overflow: TextOverflow.ellipsis,
-                                                                                  style: TextStyle(fontSize: 12.0),
-                                                                                ),
-                                                                              ],
-                                                                            ),
+                                                                          ),
+                                                                        ],
+                                                                      ),
+                                                                      Row(
+                                                                        children: [
+                                                                          Expanded(
+                                                                            child: Text(element.scheduleName ?? "", style: TextStyle(fontSize: 12.0)),
+                                                                          ),
+                                                                        ],
+                                                                      ),
+                                                                      Row(
+                                                                        children: [
+                                                                          Text(
+                                                                            element.appointmentStatus ?? "",
+                                                                            overflow: TextOverflow.ellipsis,
+                                                                            style: TextStyle(fontSize: 12.0),
+                                                                          ),
+                                                                        ],
+                                                                      ),
+                                                                    ],
+                                                                  ),
+                                                                  trailing: element.dictationStatus ==
+                                                                      "Pending"
+                                                                      ? Column(
+                                                                    mainAxisAlignment: MainAxisAlignment.end,
+                                                                    children: [
+                                                                      RichText(
+                                                                        text: TextSpan(
+                                                                          text: '• ',
+                                                                          style: TextStyle(color: CustomizedColors.dotColor, fontSize: 16),
+                                                                          children: <TextSpan>[
+                                                                            TextSpan(text: 'Dictation' + " " + element.dictationStatus ?? "", style: TextStyle(color: CustomizedColors.dictationStatusColor, fontSize: 14)),
                                                                           ],
                                                                         ),
-                                                                        trailing: element.dictationStatus ==
-                                                                                "Pending"
-                                                                            ? Column(
-                                                                                mainAxisAlignment: MainAxisAlignment.end,
-                                                                                children: [
-                                                                                  RichText(
-                                                                                    text: TextSpan(
-                                                                                      text: '• ',
-                                                                                      style: TextStyle(color: CustomizedColors.dotColor, fontSize: 16),
-                                                                                      children: <TextSpan>[
-                                                                                        TextSpan(text: 'Dictation' + " " + element.dictationStatus ?? "", style: TextStyle(color: CustomizedColors.dictationStatusColor, fontSize: 14)),
-                                                                                      ],
-                                                                                    ),
-                                                                                  )
-                                                                                ],
-                                                                              )
-                                                                            : Container(
-                                                                                width: 5,
-                                                                              ),
-                                                                      ),
-                                                                    ),
+                                                                      )
+                                                                    ],
+                                                                  )
+                                                                      : Container(
+                                                                    width: 5,
                                                                   ),
-                                                                )),
-                                                  ),
-                                                )
-                                              : Container(
-                                                  child: Column(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment
-                                                            .center,
-                                                    children: [
-                                                      Padding(
-                                                          padding: EdgeInsets
-                                                              .fromLTRB(50, 25,
-                                                                  50, 45)),
-                                                      Text(
-                                                        "No results found for related search",
-                                                        style: TextStyle(
-                                                            fontSize: 18.0,
-                                                            fontWeight:
-                                                                FontWeight.bold,
-                                                            color: CustomizedColors
-                                                                .noAppointment),
-                                                      )
-                                                    ],
-                                                  ),
-                                                );
-                                        }),
+                                                                ),
+                                                              ),
+                                                            ),
+                                                          )),
+                                                ),
+                                              )
+                                                  : Container(
+                                                child: Column(
+                                                  mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .center,
+                                                  children: [
+                                                    Padding(
+                                                        padding: EdgeInsets
+                                                            .fromLTRB(50, 25,
+                                                            50, 45)),
+                                                    Text(
+                                                      "No results found for related search",
+                                                      style: TextStyle(
+                                                          fontSize: 18.0,
+                                                          fontWeight:
+                                                          FontWeight.bold,
+                                                          color: CustomizedColors
+                                                              .noAppointment),
+                                                    )
+                                                  ],
+                                                ),
+                                              );
+                                            }),
                                       ],
                                     ),
                                   ),
@@ -1128,7 +1159,7 @@ class _PatientAppointmentState extends State<PatientAppointment> {
                       print('onTap newValue $newValue');
 
                       setState(
-                        () {
+                            () {
                           _currentSelectedProviderId =
                               (newValue as ProviderList).providerId;
 
@@ -1199,7 +1230,7 @@ class _PatientAppointmentState extends State<PatientAppointment> {
                         },
                         shape: RoundedRectangleBorder(
                             borderRadius:
-                                BorderRadius.all(Radius.circular(5.0))),
+                            BorderRadius.all(Radius.circular(5.0))),
                         label: Text(
                           'Date Filter',
                           style: TextStyle(
@@ -1276,7 +1307,7 @@ class _PatientAppointmentState extends State<PatientAppointment> {
                         },
                         shape: RoundedRectangleBorder(
                             borderRadius:
-                                BorderRadius.all(Radius.circular(5.0))),
+                            BorderRadius.all(Radius.circular(5.0))),
                         label: Text(
                           "Search Patient" ??
                               "${this._textFieldController.text}",
@@ -1327,7 +1358,7 @@ class _PatientAppointmentState extends State<PatientAppointment> {
                         },
                         shape: RoundedRectangleBorder(
                             borderRadius:
-                                BorderRadius.all(Radius.circular(5.0))),
+                            BorderRadius.all(Radius.circular(5.0))),
                         label: Text(
                           'Clear Filter',
                           style: TextStyle(
@@ -1369,24 +1400,24 @@ class _PatientAppointmentState extends State<PatientAppointment> {
                           GetSchedulePatientsList(
                               keyword1: null,
                               providerId:
-                                  _currentSelectedProviderId !=
-                                          null
-                                      ? _currentSelectedProviderId
-                                      : null,
+                              _currentSelectedProviderId !=
+                                  null
+                                  ? _currentSelectedProviderId
+                                  : null,
                               locationId:
-                                  _currentSelectedLocationId !=
-                                          null
-                                      ? _currentSelectedLocationId
-                                      : null,
+                              _currentSelectedLocationId !=
+                                  null
+                                  ? _currentSelectedLocationId
+                                  : null,
                               dictationId: _currentSelectedDictationId != null
                                   ? int.tryParse(_currentSelectedDictationId)
                                   : null,
                               startDate: startDate != "" ? startDate : null,
                               endDate: endDate != "" ? endDate : null,
                               searchString:
-                                  this._textFieldController.text != null
-                                      ? this._textFieldController.text
-                                      : null));
+                              this._textFieldController.text != null
+                                  ? this._textFieldController.text
+                                  : null));
                     },
                     child: Text('Ok'),
                   ),
@@ -1417,7 +1448,7 @@ class _PatientAppointmentState extends State<PatientAppointment> {
                   ProviderDropDowns(onTapOfProviders: (newValue) {
                     print('onTap newValue $newValue');
                     setState(
-                      () {
+                          () {
                         _currentSelectedProviderId =
                             (newValue as ProviderList).providerId;
                         print(
@@ -1484,7 +1515,7 @@ class _PatientAppointmentState extends State<PatientAppointment> {
                         },
                         shape: RoundedRectangleBorder(
                             borderRadius:
-                                BorderRadius.all(Radius.circular(5.0))),
+                            BorderRadius.all(Radius.circular(5.0))),
                         label: Text(
                           'Date Filter',
                           style: TextStyle(
@@ -1561,7 +1592,7 @@ class _PatientAppointmentState extends State<PatientAppointment> {
                         },
                         shape: RoundedRectangleBorder(
                             borderRadius:
-                                BorderRadius.all(Radius.circular(5.0))),
+                            BorderRadius.all(Radius.circular(5.0))),
                         label: Text(
                           "Search Patient" ??
                               "${this._textFieldController.text}",
@@ -1612,7 +1643,7 @@ class _PatientAppointmentState extends State<PatientAppointment> {
                         },
                         shape: RoundedRectangleBorder(
                             borderRadius:
-                                BorderRadius.all(Radius.circular(5.0))),
+                            BorderRadius.all(Radius.circular(5.0))),
                         label: Text(
                           'Clear Filter',
                           style: TextStyle(
@@ -1653,24 +1684,24 @@ class _PatientAppointmentState extends State<PatientAppointment> {
                           GetSchedulePatientsList(
                               keyword1: null,
                               providerId:
-                                  _currentSelectedProviderId !=
-                                          null
-                                      ? _currentSelectedProviderId
-                                      : null,
+                              _currentSelectedProviderId !=
+                                  null
+                                  ? _currentSelectedProviderId
+                                  : null,
                               locationId:
-                                  _currentSelectedLocationId !=
-                                          null
-                                      ? _currentSelectedLocationId
-                                      : null,
+                              _currentSelectedLocationId !=
+                                  null
+                                  ? _currentSelectedLocationId
+                                  : null,
                               dictationId: _currentSelectedDictationId != null
                                   ? int.tryParse(_currentSelectedDictationId)
                                   : null,
                               startDate: startDate != "" ? startDate : null,
                               endDate: endDate != "" ? endDate : null,
                               searchString:
-                                  this._textFieldController.text != null
-                                      ? this._textFieldController.text
-                                      : null));
+                              this._textFieldController.text != null
+                                  ? this._textFieldController.text
+                                  : null));
                     },
                     child: Text('Ok'),
                   ),
@@ -1687,24 +1718,18 @@ class _PatientAppointmentState extends State<PatientAppointment> {
 class TransactionGroupSeparator extends StatelessWidget {
   final String practice;
   int appointmentsCount;
-  final int filteredPatients;
-  TransactionGroupSeparator({this.practice, this.appointmentsCount,this.filteredPatients});
+  TransactionGroupSeparator({this.practice, this.appointmentsCount,});
 
   @override
   Widget build(BuildContext context) {
     return Center(
       child: Column(
         children: [
+
           Text(
-            "${this.practice} ${[this.appointmentsCount ]}",
+            "${this.practice} ${[this.appointmentsCount]}",
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
-          // for(int appointmentsCount=0;  appointmentsCount<=practice.length; appointmentsCount++)
-          //     Text(
-          //       // "${this.practice} "
-          //           "${[this.appointmentsCount]}",
-          //       style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          //     ),
 
         ],
       ),

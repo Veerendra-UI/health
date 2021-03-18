@@ -30,7 +30,7 @@ class PatientBloc
       );
 
       List<ScheduleList> patients;
-      patients = await Services.getSchedule(
+      patients = await Services.getSchedulepost(
           event.keyword1,
           event.providerId,
           event.locationId,

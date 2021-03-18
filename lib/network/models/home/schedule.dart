@@ -166,11 +166,8 @@ class ScheduleList {
     appointmentStartDate = json['appointmentStartDate'];
     appointmentEndDate = json['appointmentEndDate'];
     episodeAppointmentRequestId = json['episodeAppointmentRequestId'];
-    patient =
-        json['patient'] != null ? new Patient.fromJson(json['patient']) : null;
-    location = json['location'] != null
-        ? new Location.fromJson(json['location'])
-        : null;
+    patient = json['patient'] != null ? new Patient.fromJson(json['patient']) : null;
+    location = json['location'] != null ? new Location.fromJson(json['location']) : null;
     locationId = json['locationId'];
     dictationId = json['dictationId'];
     dictationStatusId = json['dictationStatusId'];
@@ -219,11 +216,12 @@ class ScheduleList {
     data['appointmentStatus'] = this.appointmentStatus;
     data['appointmentStartDate'] = this.appointmentStartDate;
     data['appointmentEndDate'] = this.appointmentEndDate;
-    data['episodeAppointmentRequestId'] = this.episodeAppointmentRequestId;
-    if (this.patient != null) {
+    data['episodeAppointmentRequestId'] = this.episodeAppointmentRequestId;if (this.patient != null)
+    {
       data['patient'] = this.patient.toJson();
     }
-    if (this.location != null) {
+    if (this.location != null)
+    {
       data['location'] = this.location.toJson();
     }
     data['locationId'] = this.locationId;
@@ -340,8 +338,7 @@ class Patient {
       this.providerName});
 
   Patient.fromJson(Map<String, dynamic> json) {
-    header =
-        json['header'] != null ? new Header.fromJson(json['header']) : null;
+    header = json['header'] != null ? new Header.fromJson(json['header']) : null;
     id = json['id'];
     firstName = json['firstName'];
     lastName = json['lastName'];
